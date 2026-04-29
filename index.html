@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>马卡龙Y形 - 81种序列记录</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #f9efe2;
+      font-family: 'Segoe UI', 'Quicksand', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 2rem 1rem;
+      margin: 0;
+    }
+
+    .container {
+      background: #fffbf5;
+      border-radius: 3.5rem;
+      box-shadow: 0 25px 45px rgba(0,0,0,0.05), 0 10px 20px rgba(0,0,0,0.03);
+      padding: 2rem 1.8rem;
+      max-width: 880px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.8rem;
+    }
+
+    h2 {
+      color: #b68b6e;
+      font-weight: 500;
+      letter-spacing: 2px;
+      font-size: 1.8rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    h2 span {
+      background: #fde4cf;
+      padding: 0.2rem 1rem;
+      border-radius: 2rem;
+      font-size: 1rem;
+      color: #9b7b64;
+    }
+
+    .progress-info {
+      background: #fff3e4;
+      padding: 0.5rem 1.5rem;
+      border-radius: 2rem;
+      color: #b48b65;
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+
+    .card-demo {
+      background: #fff6ed;
+      border-radius: 2.5rem;
+      padding: 1.8rem 2.2rem;
+      box-shadow: inset 0 2px 10px rgba(255,235,200,0.6), 0 15px 25px rgba(210,150,100,0.15);
+    }
+
+    canvas {
+      display: block;
+      width: 180px;
+      height: 180px;
+      border-radius: 28px;
+      background: #fffaf2;
+      box-shadow: 0 10px 20px rgba(180,130,90,0.1);
+    }
+
+    .control-panel {
+      display: flex;
+      gap: 1.2rem;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .btn {
+      background: #fad4b8;
+      border: none;
+      padding: 0.8rem 2rem;
+      border-radius: 3rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #6b4e3d;
+      letter-spacing: 1px;
+      cursor: pointer;
+      box-shadow: 0 6px 0 #e4b48b, 0 10px 18px rgba(205,140,80,0.2);
+      transition: all 0.1s ease;
+      border: 1px solid #ffe2c9;
+      text-transform: uppercase;
+    }
+
+    .btn:active {
+      transform: translateY(4px);
+      box-shadow: 0 2px 0 #e4b48b, 0 8px 12px rgba(205,140,80,0.25);
+    }
+
+    .btn.clear-btn {
+      background: #ffd2b0;
+      box-shadow: 0 6px 0 #d6a77a;
+      color: #5a3f32;
+    }
+
+    .btn:disabled {
+      opacity: 0.7;
+      transform: translateY(2px);
+      box-shadow: 0 3px 0 #d1b095;
+      pointer-events: none;
+    }
+
+    .status-text {
+      font-size: 0.9rem;
+      color: #b48b65;
+      font-weight: 500;
+    }
+
+    .save-status {
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    .save-status.success { color: #6b8e5a; }
+    .save-status.error { color: #c45c5c; }
+
+    .history-section { width: 100%; }
+
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.8rem;
+      color: #b48b65;
+      font-weight: 500;
+      padding: 0 0.3rem;
+    }
+
+    .history-grid {
+      background: #fff5e8;
+      border-radius: 2rem;
+      padding: 1.2rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+      max-height: 480px;
+      overflow-y: auto;
+      box-shadow: inset 0 0 0 1px rgba(255,215,170,0.5);
+    }
+
+    .history-row {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      flex-wrap: wrap;
+      background: #ffffffd6;
+      border-radius: 1.5rem;
+      padding: 0.5rem 0.9rem;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.02);
+    }
+
+    .history-row.current-row {
+      background: #fff3e4;
+      box-shadow: 0 4px 15px rgba(210,150,80,0.2);
+      border: 2px solid #fad4b8;
+    }
+
+    .mini-canvas-container {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .mini-canvas {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      background: #fff9f2;
+      box-shadow: 0 2px 6px rgba(150,100,60,0.1);
+      display: block;
+    }
+
+    .mini-label {
+      font-size: 0.65rem;
+      color: #c8a383;
+      font-weight: 600;
+      text-align: center;
+      margin-top: 1px;
+    }
+
+    .row-label {
+      font-size: 0.8rem;
+      color: #c8a383;
+      font-weight: 700;
+      min-width: 3rem;
+      background: #ffefdd;
+      padding: 0.2rem 0.5rem;
+      border-radius: 1rem;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .row-label.current-label {
+      background: #fad4b8;
+      color: #6b4e3d;
+    }
+
+    .empty-message {
+      color: #d9b594;
+      font-style: italic;
+      padding: 1rem;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>🍬 马卡龙Y形 <span>81种序列</span></h2>
+    
+    <div class="progress-info" id="progressInfo">序列 0 / 81</div>
+
+    <div class="card-demo">
+      <canvas id="mainCanvas" width="200" height="200"></canvas>
+    </div>
+
+    <div class="control-panel">
+      <button class="btn" id="rotateBtn">⟳ 下一个序列</button>
+      <button class="btn clear-btn" id="clearHistoryBtn">🗑️ 重置</button>
+      <span class="status-text" id="statusText"></span>
+      <span class="save-status" id="saveStatus"></span>
+    </div>
+
+    <div class="history-section">
+      <div class="history-header">
+        <span>📋 旋转序列记录</span>
+        <span style="font-size:0.8rem;color:#c7a68b;">(每组5个图：原+4次转动)</span>
+      </div>
+      <div class="history-grid" id="historyContainer">
+        <div class="empty-message">✨ 点击按钮开始 ✨</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      // ============ 配置：改成你的 GAS Web App URL ============
+      const GAS_URL = 'https://script.google.com/macros/s/AKfycbwgc-Y_ZEH9CfVt95ImbEQGG6i1Ra-B8DNMArBi3hTGnwGiyH2aMMuR8pt_9Ts3cVfu/exec';
+      // ========================================================
+
+      const C_YELLOW = "#fceea7";
+      const C_RED = "#f9b8b2";
+      const C_ORANGE = "#fdd0a2";
+      const C_BG = "#fff7ed";
+
+      const SIZE = 140, CX = 100, CY = 100, HALF = 70;
+
+      const mainCanvas = document.getElementById('mainCanvas');
+      const ctx = mainCanvas.getContext('2d');
+      const statusText = document.getElementById('statusText');
+      const saveStatus = document.getElementById('saveStatus');
+      const progressInfo = document.getElementById('progressInfo');
+      const historyContainer = document.getElementById('historyContainer');
+
+      let historyRows = [];
+      const MAX_ROWS = 100;
+      let currentAngle = 0;
+      let buildingRow = null;
+      let buildingAngles = [];
+      let groupCount = 0;
+
+      function dir(a) {
+        const n = ((a % 360) + 360) % 360;
+        if (n === 0) return '上';
+        if (n === 90) return '右';
+        if (n === 180) return '下';
+        return '左';
+      }
+
+      function allSeq() {
+        const a = [90, 180, 270];
+        const s = [];
+        for (let i of a) for (let j of a) for (let k of a) for (let l of a) s.push([i, j, k, l]);
+        return s;
+      }
+
+      const sequences = allSeq();
+      let seqIdx = 0;
+
+      function draw(context, angle, sz = 200) {
+        context.clearRect(0, 0, sz, sz);
+        context.fillStyle = C_BG;
+        context.fillRect(0, 0, sz, sz);
+        context.save();
+        context.translate(sz/2, sz/2);
+        context.rotate(angle * Math.PI / 180);
+        const h = sz * 0.35;
+        context.strokeStyle = "#e7c9a8";
+        context.lineWidth = sz > 100 ? 2.2 : 1.4;
+        context.strokeRect(-h, -h, h*2, h*2);
+        context.lineWidth = sz > 100 ? 4.5 : 2.5;
+        context.lineCap = 'round';
+        const tl = {x:-h, y:-h}, tr = {x:h, y:-h}, bm = {x:0, y:h};
+        context.strokeStyle = C_RED;
+        context.beginPath(); context.moveTo(0,0); context.lineTo(tl.x, tl.y); context.stroke();
+        context.strokeStyle = C_ORANGE;
+        context.beginPath(); context.moveTo(0,0); context.lineTo(tr.x, tr.y); context.stroke();
+        context.strokeStyle = C_YELLOW;
+        context.beginPath(); context.moveTo(0,0); context.lineTo(bm.x, bm.y); context.stroke();
+        context.fillStyle = "#dbb88c";
+        context.beginPath(); context.arc(0,0, sz>100?4.2:2,0,Math.PI*2); context.fill();
+        [tl,tr,bm].forEach((p,i) => {
+          context.fillStyle = [C_RED,C_ORANGE,C_YELLOW][i];
+          context.beginPath(); context.arc(p.x,p.y,sz>100?3.8:1.8,0,Math.PI*2); context.fill();
+        });
+        context.restore();
+      }
+
+      draw(ctx, currentAngle);
+
+      function rotInfo(deg) {
+        if (deg === 270) return {eff:90, dur:500, dir:-1};
+        if (deg === 180) return {eff:180, dur:1000, dir:1};
+        return {eff:90, dur:500, dir:1};
+      }
+
+      function miniCanvas(angle) {
+        const c = document.createElement('canvas');
+        c.className = 'mini-canvas';
+        c.width = 48; c.height = 48;
+        draw(c.getContext('2d'), angle, 48);
+        return c;
+      }
+
+      function addGraph(angle) {
+        if (!buildingRow) {
+          groupCount++;
+          buildingRow = document.createElement('div');
+          buildingRow.className = 'history-row current-row';
+          buildingRow.dataset.gn = groupCount;
+          const lb = document.createElement('span');
+          lb.className = 'row-label current-label';
+          lb.textContent = '当前';
+          buildingRow.appendChild(lb);
+          const mc = document.createElement('div');
+          mc.className = 'mini-canvas-container';
+          buildingRow.appendChild(mc);
+          historyContainer.insertBefore(buildingRow, historyContainer.firstChild);
+          const em = historyContainer.querySelector('.empty-message');
+          if (em) em.remove();
+        }
+        const mc = buildingRow.querySelector('.mini-canvas-container');
+        const wr = document.createElement('div');
+        wr.style.cssText = 'display:flex;flex-direction:column;align-items:center;';
+        wr.appendChild(miniCanvas(angle));
+        const lb = document.createElement('span');
+        lb.className = 'mini-label';
+        lb.textContent = ['原','1','2','3','4'][mc.children.length] || '';
+        wr.appendChild(lb);
+        mc.appendChild(wr);
+        buildingAngles.push(angle);
+      }
+
+      function finalize() {
+        if (!buildingRow) return;
+        buildingRow.classList.remove('current-row');
+        const lb = buildingRow.querySelector('.row-label');
+        if (lb) lb.classList.remove('current-label');
+        if (buildingAngles.length === 5) {
+          historyRows.unshift({angles:[...buildingAngles], gn:parseInt(buildingRow.dataset.gn)});
+          if (historyRows.length > MAX_ROWS) {
+            historyRows.pop();
+            const rows = historyContainer.querySelectorAll('.history-row');
+            if (rows.length > MAX_ROWS) rows[rows.length-1].remove();
+          }
+          sendToGAS();
+        }
+        buildingRow = null;
+        buildingAngles = [];
+        updateLabels();
+      }
+
+      function sendToGAS() {
+        const rotations = [];
+        const directions = [];
+        let ca = buildingAngles[0];
+        for (let i = 0; i < 4; i++) {
+          const na = buildingAngles[i+1];
+          let delta = (na - ca + 360) % 360;
+          if (delta === 0) delta = 360;
+          rotations.push(delta);
+          directions.push(dir(na));
+          ca = na;
+        }
+        const data = {
+          orderNumber: groupCount,
+          rotations: rotations,
+          directions: [dir(buildingAngles[0]), ...directions]
+        };
+
+        fetch(GAS_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        })
+        .then(() => {
+          saveStatus.className = 'save-status success';
+          saveStatus.textContent = '✅ 已保存 #' + groupCount;
+        })
+        .catch((err) => {
+          saveStatus.className = 'save-status error';
+          saveStatus.textContent = '❌ 保存失败';
+          console.error(err);
+        })
+        .finally(() => {
+          setTimeout(() => { saveStatus.textContent = ''; }, 2000);
+        });
+      }
+
+      function updateLabels() {
+        const rows = historyContainer.querySelectorAll('.history-row');
+        rows.forEach(row => {
+          const lb = row.querySelector('.row-label');
+          if (!lb) return;
+          if (row.classList.contains('current-row')) {
+            lb.textContent = '当前';
+            lb.className = 'row-label current-label';
+          } else {
+            lb.textContent = '#' + row.dataset.gn;
+            lb.className = 'row-label';
+          }
+        });
+      }
+
+      function animRotation(from, to, dur, frames) {
+        return new Promise(resolve => {
+          const iv = dur / frames;
+          let f = 0;
+          let delta = to - from;
+          if (delta > 180) delta -= 360;
+          if (delta < -180) delta += 360;
+          const t = setInterval(() => {
+            if (f >= frames) {
+              clearInterval(t);
+              draw(ctx, to);
+              resolve();
+              return;
+            }
+            draw(ctx, (from + delta * (f/frames) + 360) % 360);
+            f++;
+          }, iv);
+        });
+      }
+
+      function wait(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+      }
+
+      async function runSequence(seq) {
+        const start = currentAngle;
+        addGraph(start);
+        let acc = start;
+        for (let i = 0; i < 4; i++) {
+          const deg = seq[i];
+          const {eff, dur, dir: d} = rotInfo(deg);
+          const end = (acc + eff * d + 360) % 360;
+          const fr = Math.max(30, Math.floor(dur / 16));
+          const dt = d === -1 ? '逆时针' : '顺时针';
+          statusText.textContent = '第'+(i+1)+'次: '+deg+'° ('+dt+eff+'°, '+(dur/1000)+'s)';
+          await animRotation(acc, end, dur, fr);
+          acc = end;
+          currentAngle = acc;
+          addGraph(acc);
+          if (i < 3) {
+            statusText.textContent = '停顿0.5秒...';
+            await wait(500);
+          }
+        }
+        finalize();
+        statusText.textContent = '✅ 序列' + (seqIdx+1) + '/81 完成';
+        progressInfo.textContent = '序列 ' + (seqIdx+1) + ' / 81';
+        setTimeout(() => { statusText.textContent = ''; }, 2000);
+      }
+
+      const btn = document.getElementById('rotateBtn');
+      const clr = document.getElementById('clearHistoryBtn');
+      let busy = false;
+
+      btn.addEventListener('click', async () => {
+        if (busy || seqIdx >= sequences.length) {
+          if (seqIdx >= sequences.length) statusText.textContent = '🎉 81种序列全部完成！';
+          return;
+        }
+        busy = true;
+        btn.disabled = true;
+        try {
+          await runSequence(sequences[seqIdx]);
+          seqIdx++;
+          if (seqIdx >= sequences.length) btn.textContent = '✅ 已完成';
+        } catch(e) {
+          console.error(e);
+        }
+        busy = false;
+        btn.disabled = false;
+      });
+
+      clr.addEventListener('click', () => {
+        if (busy) return;
+        historyRows = [];
+        buildingRow = null;
+        buildingAngles = [];
+        groupCount = 0;
+        seqIdx = 0;
+        historyContainer.innerHTML = '<div class="empty-message">✨ 点击按钮开始 ✨</div>';
+        progressInfo.textContent = '序列 0 / 81';
+        btn.textContent = '⟳ 下一个序列';
+        statusText.textContent = '';
+      });
+    })();
+  </script>
+</body>
+</html>
